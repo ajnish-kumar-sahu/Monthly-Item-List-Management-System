@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <iomanip>
+#include <sstream>
 
 // ANSI color codes
 #define RESET   "\033[0m"
@@ -23,13 +24,15 @@ private:
         std::string item_code;
         double price;
         std::string place_to_dealer;
+        std::string category;      
+        std::string date_added;    
     };
     
     std::unordered_map<std::string, Item> items;
     static int itemCount;
 
 public:
-    void addItem(const std::string& item_code, double price, const std::string& place_to_dealer) 
+    void addItem(const std::string& item_code, double price, const std::string& place_to_dealer, const std::string& category, const std::string& date_added) 
     {
         if (price <= 0) 
         {
@@ -42,7 +45,7 @@ public:
             return;
         }
 
-        items[item_code] = {item_code, price, place_to_dealer};
+        items[item_code] = {item_code, price, place_to_dealer, category, date_added};
         itemCount++;
         std::cout << GREEN << "Item added successfully!\n" << RESET;
     }
@@ -68,7 +71,9 @@ public:
             const auto& item = it->second;
             std::cout << CYAN << "Item Code: " << BOLD << item.item_code << RESET << CYAN
                       << ", Price: " << BOLD << item.price << RESET << CYAN
-                      << ", Dealer: " << BOLD << item.place_to_dealer << RESET << '\n';
+                      << ", Dealer: " << BOLD << item.place_to_dealer << RESET << CYAN
+                      << ", Category: " << BOLD << item.category << RESET << CYAN
+                      << ", Date Added: " << BOLD << item.date_added << RESET << '\n';
         } 
         else 
         {
@@ -85,61 +90,22 @@ public:
         }
 
         std::cout << BLUE << BOLD;
-        std::cout << "---------------------------------------------------\n";
-        std::cout << "| Item Code | Price      | Dealer                |\n";
-        std::cout << "---------------------------------------------------\n" << RESET;
+        std::cout << "-----------------------------------------------------------------------\n";
+        std::cout << "| Item Code | Price      | Dealer           | Category    | Date Added |\n";
+        std::cout << "-----------------------------------------------------------------------\n" << RESET;
         
         for (const auto& pair : items) 
         {
             const auto& item = pair.second;
             std::cout << CYAN << "| " << std::left << std::setw(9) << item.item_code 
                       << " | " << std::setw(10) << item.price 
-                      << " | " << std::setw(20) << item.place_to_dealer << " |" << RESET << '\n';
+                      << " | " << std::setw(15) << item.place_to_dealer 
+                      << " | " << std::setw(10) << item.category 
+                      << " | " << std::setw(10) << item.date_added << " |\n" << RESET;
         }
         
         std::cout << BLUE << BOLD;
-        std::cout << "---------------------------------------------------\n" << RESET;
-    }
-
-    void searchByDealer(const std::string& dealer) const 
-    {
-        bool found = false;
-        std::cout << MAGENTA << "Searching for items from dealer: " << BOLD << dealer << RESET << "\n";
-        
-        for (const auto& pair : items) 
-        {
-            const auto& item = pair.second;
-            if (item.place_to_dealer == dealer) 
-            {
-                std::cout << CYAN << "Item Code: " << BOLD << item.item_code 
-                          << RESET << CYAN << ", Price: " << BOLD << item.price << RESET << '\n';
-                found = true;
-            }
-        }
-        if (!found) 
-        {
-            std::cout << YELLOW << "No items found for dealer: " << dealer << RESET << '\n';
-        }
-    }
-
-    void sortItemsByPrice() 
-    {
-        std::vector<Item> sortedItems;
-        for (const auto& pair : items) 
-        {
-            sortedItems.push_back(pair.second);
-        }
-
-        std::sort(sortedItems.begin(), sortedItems.end(), 
-            [](const Item& a, const Item& b) { return a.price < b.price; });
-
-        std::cout << MAGENTA << BOLD << "Items sorted by price:\n" << RESET;
-        for (const auto& item : sortedItems) 
-        {
-            std::cout << CYAN << "Item Code: " << BOLD << item.item_code 
-                      << RESET << CYAN << ", Price: " << BOLD << item.price 
-                      << RESET << CYAN << ", Dealer: " << BOLD << item.place_to_dealer << RESET << '\n';
-        }
+        std::cout << "--------------------------------------------------------------------------4\n" << RESET;
     }
 
     void saveToFile() 
@@ -154,7 +120,11 @@ public:
         for (const auto& pair : items) 
         {
             const auto& item = pair.second;
-            file << item.item_code << "," << item.price << "," << item.place_to_dealer << "\n";
+            file << item.item_code << "," 
+                 << item.price << "," 
+                 << item.place_to_dealer << "," 
+                 << item.category << "," 
+                 << item.date_added << "\n";
         }
 
         file.close();
@@ -173,23 +143,21 @@ public:
         items.clear();
         itemCount = 0;
 
-        std::string line, item_code, place_to_dealer;
+        std::string line, item_code, place_to_dealer, category, date_added;
         double price;
-        
+
         while (std::getline(file, line)) 
         {
-            size_t pos1 = line.find(',');
-            size_t pos2 = line.find(',', pos1 + 1);
-            
-            if (pos1 != std::string::npos && pos2 != std::string::npos) 
-            {
-                item_code = line.substr(0, pos1);
-                price = std::stod(line.substr(pos1 + 1, pos2 - pos1 - 1));
-                place_to_dealer = line.substr(pos2 + 1);
-                
-                items[item_code] = {item_code, price, place_to_dealer};
-                itemCount++;
-            }
+            std::stringstream ss(line);
+            std::getline(ss, item_code, ',');
+            ss >> price;
+            ss.ignore();  
+            std::getline(ss, place_to_dealer, ',');
+            std::getline(ss, category, ',');
+            std::getline(ss, date_added);
+
+            items[item_code] = {item_code, price, place_to_dealer, category, date_added};
+            itemCount++;
         }
 
         file.close();
@@ -210,14 +178,15 @@ int main()
     monthlyList.loadFromFile();
 
     int choice;
-    std::string item_code, place_to_dealer;
+    std::string item_code, place_to_dealer, category, date_added;
     double price;
 
     do 
     {
         std::cout << "\n" << BLUE << BOLD << "Menu:\n" << RESET;
-        std::cout << CYAN << "1. Add Item\n2. Delete Item\n3. Print Item\n4. Display All Items\n";
-        std::cout << "5. Search by Dealer\n6. Sort by Price\n7. Exit\n" << RESET;
+        std::cout << CYAN 
+                  << "1. Add Item\n2. Delete Item\n3. Print Item\n4. Display All Items\n"
+                  << "5. Save to File\n6. Load from File\n7. Exit\n" << RESET;
         std::cout << YELLOW << "Enter your choice: " << RESET;
         std::cin >> choice;
 
@@ -228,10 +197,14 @@ int main()
                 std::cin >> item_code;
                 std::cout << YELLOW << "Enter Price: " << RESET;
                 std::cin >> price;
-                std::cout << YELLOW << "Enter Place to Dealer: " << RESET;
-                std::cin.ignore();
+                std::cin.ignore();  
+                std::cout << YELLOW << "Enter Dealer: " << RESET;
                 std::getline(std::cin, place_to_dealer);
-                monthlyList.addItem(item_code, price, place_to_dealer);
+                std::cout << YELLOW << "Enter Category: " << RESET;
+                std::getline(std::cin, category);
+                std::cout << YELLOW << "Enter Date Added (YYYY-MM-DD): " << RESET;
+                std::getline(std::cin, date_added);
+                monthlyList.addItem(item_code, price, place_to_dealer, category, date_added);
                 break;
             case 2:
                 std::cout << YELLOW << "Enter Item Code to Delete: " << RESET;
@@ -247,16 +220,12 @@ int main()
                 monthlyList.displayAllItems();
                 break;
             case 5:
-                std::cout << YELLOW << "Enter Dealer Name: " << RESET;
-                std::cin.ignore();
-                std::getline(std::cin, place_to_dealer);
-                monthlyList.searchByDealer(place_to_dealer);
+                monthlyList.saveToFile();
                 break;
             case 6:
-                monthlyList.sortItemsByPrice();
+                monthlyList.loadFromFile();
                 break;
             case 7:
-                monthlyList.saveToFile();
                 std::cout << MAGENTA << "Exiting...\n" << RESET;
                 break;
             default:
