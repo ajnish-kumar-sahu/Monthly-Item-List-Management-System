@@ -1,93 +1,116 @@
 # Monthly Item Management System
 
-## Description
-A robust C++ console application designed for managing monthly item inventory with support for colored output and file persistence. This system allows users to perform various operations on items including addition, deletion, searching, and sorting functionalities.
+## 🚀 Overview
+A C++ console application for managing inventory items with colored output, file persistence, and real-time updates.
 
-## Features
+## ✨ Features
 
-### Core Functionality
-- ✨ Add new items with unique item codes
+### Core Functionalities
+- ✅ Add new items with validation
 - 🗑️ Delete existing items
-- 🔍 Search items by dealer name
-- 💰 Sort items by price
-- 📋 Display comprehensive item listings
+- 🔍 Search specific items
+- 📋 Display formatted item listings
 - 💾 Automatic data persistence
+- 🎨 Color-coded console interface
 
-### User Interface
-- 🎨 Color-coded console output for enhanced readability
-- 📝 Interactive menu system
-- ⚡ Real-time feedback for all operations
-- 📊 Formatted table display for item listings
+### Item Properties
+- Item Code (unique identifier)
+- Price
+- Dealer Information
+- Category
+- Date Added
 
-### Data Management
-- 📁 Automatic file-based data persistence
-- 📥 Data loading on startup
-- 📤 Auto-save on exit
-- 🔐 Input validation for data integrity
+## 🛠️ Technical Requirements
 
-## Technical Details
+### Prerequisites
+- C++11 compatible compiler
+- Windows terminal with ANSI color support
+- Visual Studio Code (recommended)
 
 ### Dependencies
-- C++11 or higher
-- Standard C++ libraries
-- ANSI-compatible terminal
-
-### Data Structure
-- Uses `unordered_map` for O(1) item lookups
-- CSV file format for data storage
-- Structured item representation with code, price, and dealer info
-
-### File Format
-```csv
-item_code,price,dealer_name
+```cpp
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <unordered_map>
+#include <algorithm>
+#include <iomanip>
+#include <sstream>
 ```
 
-## Building and Running
+## 📦 Installation
 
-### Windows
+1. Clone the repository:
 ```bash
-g++ Item.cpp -o Item.exe
+git clone https://github.com/ajnish-kumar-sahu/monthly-item-management.git
+cd monthly-item-management
+```
+
+2. Compile the program:
+```bash
+g++ -std=c++11 Item.cpp -o Item.exe
+```
+
+3. Run the application:
+```bash
 ./Item.exe
 ```
 
-## Usage Guide
+## 📝 Usage Guide
 
-1. **Add Item (Option 1)**
+### Main Menu Options
+1. **Add Item**
    - Enter item code
    - Specify price
-   - Input dealer information
+   - Add dealer information
+   - Set category
+   - Input date
 
-2. **Delete Item (Option 2)**
-   - Enter item code to remove
+2. **Delete Item**
+   - Remove items using their unique code
 
-3. **Print Item (Option 3)**
-   - View specific item details
+3. **Print Item**
+   - View detailed information of specific items
 
-4. **Display All Items (Option 4)**
-   - View formatted table of all items
+4. **Display All Items**
+   - See complete inventory in tabulated format
 
-5. **Search by Dealer (Option 5)**
-   - Enter dealer name to filter items
+5. **Save to File**
+   - Persist data to items.txt
 
-6. **Sort by Price (Option 6)**
-   - Display items sorted by price
+6. **Load from File**
+   - Restore data from items.txt
 
-7. **Exit (Option 7)**
-   - Save and exit program
+7. **Exit**
+   - Save and close application
 
-## Error Handling
-- Duplicate item code prevention
-- Price validation (must be positive)
+## 💾 Data Storage
+
+Items are stored in `items.txt` using CSV format:
+```
+item_code,price,dealer_name,category,date_added
+```
+
+## 🔒 Data Validation
+- Unique item code verification
+- Positive price validation
+- Required field checks
 - File operation error handling
-- Input validation
 
-## Data Persistence
-- Items automatically saved to `items.txt`
-- Data loaded on program start
-- Fail-safe file operations
+## 📁 Project Structure
+```
+monthly-item-management/
+├── Item.cpp
+├── items.txt
+└── README.md
+```
 
-## Contributing
-Feel free to submit issues and enhancement requests!
+## 🤝 Contributing
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
 
-<!--## License
-This project is open source and available under the MIT License.-->
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
